@@ -1,11 +1,8 @@
 from riotwatcher import LolWatcher, ApiError
+import pydantic
 
 lol_watcher = LolWatcher('RGAPI-0fd83fbb-314d-421a-9baf-c73ff5379e1a')
-
-my_region = 'na1'
-
-me = lol_watcher.summoner.by_name(my_region, 'Swoh')
-print(me)
+region = 'na1'
 
 def get_game_data_id(lol_watcher, region, game_id):
     try:
