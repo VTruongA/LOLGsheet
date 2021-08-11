@@ -75,21 +75,21 @@ class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.setMinimumSize(QSize(320, 140))    
+        self.setMinimumSize(QSize(820, 600))    
         self.setWindowTitle("LolGsheets") 
 
         self.gameIdText = QLabel(self)
         self.gameIdText.setText('GAME ID:')
         self.gameId = QLineEdit(self)
 
-        self.gameId.move(80, 20)
-        self.gameId.resize(200, 32)
-        self.gameIdText.move(20, 20)
+        self.gameId.move(200, 20)
+        self.gameId.resize(425, 32)
+        self.gameIdText.move(100, 20)
 
         enterButton = QPushButton('ENTER', self)
         enterButton.clicked.connect(self.clickMethod)
         enterButton.resize(200,32)
-        enterButton.move(80, 60)        
+        enterButton.move(300, 60)        
 
     def clickMethod(self):
         print('Entered Game ID: ' + self.gameId.text())
