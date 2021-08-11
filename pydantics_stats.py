@@ -34,3 +34,33 @@ class Stats(BaseModel):
     firstTowerAssist: bool
     goldEarned: int
     champLevel: int
+
+class Participant(BaseModel):
+    teamId: int
+    championId: int
+    stats: Stats
+    timeline: Timeline
+
+class Team(BaseModel):
+    teamId: int
+    win: str
+    firstBlood: bool
+    firstTower: bool
+    firstInhibitor: bool
+    firstBaron: bool
+    firstDragon: bool
+    firstRiftHerald: bool
+    towerKills: int
+    inhibitorKills: int
+    baronKills: int
+    dragonKills: int
+    riftHeraldKills: int
+
+
+class Match(BaseModel):
+    gameId: int
+    gameCreation: int
+    gameDuration: int
+    gameVersion: str
+    teams: List[Team] = []
+    participants: List[Participant] = []
