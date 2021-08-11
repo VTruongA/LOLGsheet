@@ -92,7 +92,6 @@ class MainWindow(QMainWindow):
         enterButton.move(80, 60)        
 
     def clickMethod(self):
-        
         print('Entered Game ID: ' + self.gameId.text())
 
 LOLWATCHER = LolWatcher('RGAPI-bc836c0e-e2cd-4468-b513-fd5800205fd3')
