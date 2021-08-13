@@ -6,7 +6,8 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
+import urllib
 
 class Timeline(BaseModel):
     lane: str
@@ -156,12 +157,16 @@ class MainWindow(QMainWindow):
 
     def clickMethod(self):
         print('Entered Game ID: ' + self.gameId.text())
+        champ_ids, champs_in_game = get_teams_data(self.gameId.text())
+        print(champs_in_game)
+
 
 LOLWATCHER = LolWatcher('RGAPI-01def34c-ba3e-4734-ae9a-8720145eee9f')
 REGION = 'na1'
 VERISION = LOLWATCHER.data_dragon.versions_for_region(REGION)
 CHAMPION_VERSIONS = VERISION['n']['champion']
 CURR_CHAMP_LIST = LOLWATCHER.data_dragon.champions(CHAMPION_VERSIONS)
+game_id = 4008089613
 
 def get_game_data_id(lol_watcher, region, game_id):
     try:
@@ -188,8 +193,7 @@ def get_teams_data(game_id):
             counted+=1
         if counted == 10:
             break
-        #print(i + " " + CURR_CHAMP_LIST['data'][i]['key'])
-    print(champs_in_game)
+    return champ_to_id, champs_in_game
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
