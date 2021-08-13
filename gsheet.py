@@ -164,15 +164,36 @@ class MainWindow(QMainWindow):
     def clickMethod(self):
         print('Entered Game ID: ' + self.gameId.text())
         CHAMP_IDS, CHAMPS_IN_GAME = get_teams_data(self.gameId.text())
-        url = "http://ddragon.leagueoflegends.com/cdn/" + CHAMPION_VERSIONS + "/img/champion/" + str(CHAMP_IDS["131"]) + ".png"
-        data = urllib.request.urlopen(url).read()
-        self.pixMap = QPixmap()
-        self.pixMap.loadFromData(data)
-        label = QtWidgets.QLabel(self)
-        label.setPixmap(self.pixMap)
-        label.move(100,100)
-        label.resize(120,120)
-        label.show()
+
+        yPos = 100
+        i = 0
+        space = 40
+        for teams in CHAMPS_IN_GAME.values():
+            for champId in teams:
+                url = "http://ddragon.leagueoflegends.com/cdn/" + CHAMPION_VERSIONS + "/img/champion/" + CHAMP_IDS[champId] + ".png"
+                data = urllib.request.urlopen(url).read()
+                self.pixMap = QPixmap()
+                self.pixMap.loadFromData(data)
+                label = QtWidgets.QLabel(self)
+                label.setPixmap(self.pixMap)
+                label.resize(120,120)
+                if(i < 5):
+                    label.move(200,yPos + space * i)
+                else:
+                    label.move(600, yPos - 500 + space * (i - 5))
+                label.show()
+                yPos+=100
+                i+=1
+
+        # url = "http://ddragon.leagueoflegends.com/cdn/" + CHAMPION_VERSIONS + "/img/champion/" + str(CHAMP_IDS["131"]) + ".png"
+        # data = urllib.request.urlopen(url).read()
+        # self.pixMap = QPixmap()
+        # self.pixMap.loadFromData(data)
+        # label = QtWidgets.QLabel(self)
+        # label.setPixmap(self.pixMap)
+        # label.move(100,100)
+        # label.resize(120,120)
+        # label.show()
 
 
 LOLWATCHER = LolWatcher('RGAPI-01def34c-ba3e-4734-ae9a-8720145eee9f')
