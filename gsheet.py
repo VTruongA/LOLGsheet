@@ -73,7 +73,13 @@ class Match(BaseModel):
     teams: List[Team] = []
     participants: List[Participant] = []
 
+CHAMP_IDS = None
+CHAMPS_IN_GAME = None
+
 class MainWindow(QMainWindow):
+
+    
+
     def __init__(self):
         QMainWindow.__init__(self)
 
@@ -155,10 +161,18 @@ class MainWindow(QMainWindow):
         self.redSupport.resize(self.pixmap.width(), self.pixmap.height())
         self.redSupport.move(706,500)
 
+        
+
     def clickMethod(self):
         print('Entered Game ID: ' + self.gameId.text())
-        champ_ids, champs_in_game = get_teams_data(self.gameId.text())
-        print(champs_in_game)
+        CHAMP_IDS, CHAMPS_IN_GAME = get_teams_data(self.gameId.text())
+        print(CHAMP_IDS)
+        url = "http://ddragon.leagueoflegends.com/cdn/" + CHAMPION_VERSIONS + "/img/champion/" + str(CHAMP_IDS["131"]) + ".png"
+        data = urllib.request.urlopen(url).read()
+        pixMap = QPixmap()
+        pixMap.loadFromData(data)
+        label = QtWidgets.QLabel()
+        label.setPixmap(pixMap)
 
 
 LOLWATCHER = LolWatcher('RGAPI-01def34c-ba3e-4734-ae9a-8720145eee9f')
