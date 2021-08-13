@@ -6,6 +6,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QPixmap
 
 class Timeline(BaseModel):
     lane: str
@@ -77,6 +78,7 @@ class MainWindow(QMainWindow):
 
         self.setMinimumSize(QSize(820, 600))    
         self.setWindowTitle("LolGsheets") 
+        self.setStyleSheet("background-color: #889bbf")
 
         self.gameIdText = QLabel(self)
         self.gameIdText.setText('GAME ID:')
@@ -89,17 +91,77 @@ class MainWindow(QMainWindow):
         enterButton = QPushButton('ENTER', self)
         enterButton.clicked.connect(self.clickMethod)
         enterButton.resize(200,32)
-        enterButton.move(300, 60)        
+        enterButton.move(300, 60)
+        enterButton.setStyleSheet("background-color: white")
+
+        self.blueTop = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/top.png")
+        self.blueTop.setPixmap(self.pixmap)
+        self.blueTop.resize(self.pixmap.width(), self.pixmap.height())
+        self.blueTop.move(50,100)
+
+        self.blueJungle = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/jungle.png")
+        self.blueJungle.setPixmap(self.pixmap)
+        self.blueJungle.resize(self.pixmap.width(), self.pixmap.height())
+        self.blueJungle.move(50,200)
+
+        self.blueMid = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/mid.png")
+        self.blueMid.setPixmap(self.pixmap)
+        self.blueMid.resize(self.pixmap.width(), self.pixmap.height())
+        self.blueMid.move(50,300)
+
+        self.blueAdc = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/bottom.png")
+        self.blueAdc.setPixmap(self.pixmap)
+        self.blueAdc.resize(self.pixmap.width(), self.pixmap.height())
+        self.blueAdc.move(50,400)
+
+        self.blueSupport = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/support.png")
+        self.blueSupport.setPixmap(self.pixmap)
+        self.blueSupport.resize(self.pixmap.width(), self.pixmap.height())
+        self.blueSupport.move(50,500)
+
+        self.redTop = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/top.png")
+        self.redTop.setPixmap(self.pixmap)
+        self.redTop.resize(self.pixmap.width(), self.pixmap.height())
+        self.redTop.move(706,100)
+
+        self.redJungle = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/jungle.png")
+        self.redJungle.setPixmap(self.pixmap)
+        self.redJungle.resize(self.pixmap.width(), self.pixmap.height())
+        self.redJungle.move(706,200)
+
+        self.redMid = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/mid.png")
+        self.redMid.setPixmap(self.pixmap)
+        self.redMid.resize(self.pixmap.width(), self.pixmap.height())
+        self.redMid.move(706,300)
+
+        self.redAdc = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/bottom.png")
+        self.redAdc.setPixmap(self.pixmap)
+        self.redAdc.resize(self.pixmap.width(), self.pixmap.height())
+        self.redAdc.move(706,400)
+
+        self.redSupport = QLabel(self)
+        self.pixmap = QPixmap("Lane pngs/support.png")
+        self.redSupport.setPixmap(self.pixmap)
+        self.redSupport.resize(self.pixmap.width(), self.pixmap.height())
+        self.redSupport.move(706,500)
 
     def clickMethod(self):
         print('Entered Game ID: ' + self.gameId.text())
 
-LOLWATCHER = LolWatcher('RGAPI-bc836c0e-e2cd-4468-b513-fd5800205fd3')
+LOLWATCHER = LolWatcher('RGAPI-01def34c-ba3e-4734-ae9a-8720145eee9f')
 REGION = 'na1'
 VERISION = LOLWATCHER.data_dragon.versions_for_region(REGION)
 CHAMPION_VERSIONS = VERISION['n']['champion']
 CURR_CHAMP_LIST = LOLWATCHER.data_dragon.champions(CHAMPION_VERSIONS)
-
 
 def get_game_data_id(lol_watcher, region, game_id):
     try:
@@ -127,6 +189,7 @@ def get_teams_data(game_id):
         if counted == 10:
             break
         #print(i + " " + CURR_CHAMP_LIST['data'][i]['key'])
+    print(champs_in_game)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
