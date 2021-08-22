@@ -2,11 +2,10 @@ from riotwatcher import LolWatcher, ApiError
 from typing import List, Optional
 from pydantic import BaseModel
 import sys
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QApplication
+from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QColor, QPen
 import urllib
 
 class Timeline(BaseModel):
@@ -161,11 +160,131 @@ class MainWindow(QMainWindow):
         self.redSupport.resize(self.pixmap.width(), self.pixmap.height())
         self.redSupport.move(830,660)
 
-        self.redSupportArrow = QLabel(self)
-        self.pixmap = QPixmap("Lane pngs/up.png")
-        self.redSupportArrow.setPixmap(self.pixmap)
-        self.redSupportArrow.resize(self.pixmap.width(), self.pixmap.height())
-        self.redSupportArrow.move(600,680)
+        #######################################################################
+        ##############             BLUE SIDE BUTTONS            ###############
+        #######################################################################
+
+        blueTopButton = QPushButton(self)
+        blueTopButton.resize(60,60)
+        blueTopButton.move(365, 130)
+        blueTopButton.setIcon(QIcon('Lane pngs/down.png'))
+        blueTopButton.setIconSize(QtCore.QSize(60,60))
+        blueTopButton.setStyleSheet("background-color: white")
+
+        blueJungleUpButton = QPushButton(self)
+        blueJungleUpButton.resize(60,60)
+        blueJungleUpButton.move(330, 270)
+        blueJungleUpButton.setIcon(QIcon('Lane pngs/up.png'))
+        blueJungleUpButton.setIconSize(QtCore.QSize(60,60))
+        blueJungleUpButton.setStyleSheet("background-color: white")
+
+        blueJungleDownButton = QPushButton(self)
+        blueJungleDownButton.resize(60,60)
+        blueJungleDownButton.move(400, 270)
+        blueJungleDownButton.setIcon(QIcon('Lane pngs/down.png'))
+        blueJungleDownButton.setIconSize(QtCore.QSize(60,60))
+        blueJungleDownButton.setStyleSheet("background-color: white")
+
+        blueMidUpButton = QPushButton(self)
+        blueMidUpButton.resize(60,60)
+        blueMidUpButton.move(330, 410)
+        blueMidUpButton.setIcon(QIcon('Lane pngs/up.png'))
+        blueMidUpButton.setIconSize(QtCore.QSize(60,60))
+        blueMidUpButton.setStyleSheet("background-color: white")
+
+        blueMidDownButton = QPushButton(self)
+        blueMidDownButton.resize(60,60)
+        blueMidDownButton.move(400, 410)
+        blueMidDownButton.setIcon(QIcon('Lane pngs/down.png'))
+        blueMidDownButton.setIconSize(QtCore.QSize(60,60))
+        blueMidDownButton.setStyleSheet("background-color: white")
+
+        blueBottomUpButton = QPushButton(self)
+        blueBottomUpButton.resize(60,60)
+        blueBottomUpButton.move(330, 550)
+        blueBottomUpButton.setIcon(QIcon('Lane pngs/up.png'))
+        blueBottomUpButton.setIconSize(QtCore.QSize(60,60))
+        blueBottomUpButton.setStyleSheet("background-color: white")
+
+        blueBottomDownButton = QPushButton(self)
+        blueBottomDownButton.resize(60,60)
+        blueBottomDownButton.move(400, 550)
+        blueBottomDownButton.setIcon(QIcon('Lane pngs/down.png'))
+        blueBottomDownButton.setIconSize(QtCore.QSize(60,60))
+        blueBottomDownButton.setStyleSheet("background-color: white")
+
+        blueSuportButton = QPushButton(self)
+        blueSuportButton.resize(60,60)
+        blueSuportButton.move(365, 690)
+        blueSuportButton.setIcon(QIcon('Lane pngs/up.png'))
+        blueSuportButton.setIconSize(QtCore.QSize(60,60))
+        blueSuportButton.setStyleSheet("background-color: white")
+
+        #######################################################################
+        ###############             RED SIDE BUTTONS            ###############
+        #######################################################################
+
+        redTopButton = QPushButton(self)
+        redTopButton.resize(60,60)
+        redTopButton.move(595, 130)
+        redTopButton.setIcon(QIcon('Lane pngs/down.png'))
+        redTopButton.setIconSize(QtCore.QSize(60,60))
+        redTopButton.setStyleSheet("background-color: white")
+
+        redJungleUpButton = QPushButton(self)
+        redJungleUpButton.resize(60,60)
+        redJungleUpButton.move(560, 270)
+        redJungleUpButton.setIcon(QIcon('Lane pngs/up.png'))
+        redJungleUpButton.setIconSize(QtCore.QSize(60,60))
+        redJungleUpButton.setStyleSheet("background-color: white")
+
+        redJungleDownButton = QPushButton(self)
+        redJungleDownButton.resize(60,60)
+        redJungleDownButton.move(630, 270)
+        redJungleDownButton.setIcon(QIcon('Lane pngs/down.png'))
+        redJungleDownButton.setIconSize(QtCore.QSize(60,60))
+        redJungleDownButton.setStyleSheet("background-color: white")
+
+        redMidUpButton = QPushButton(self)
+        redMidUpButton.resize(60,60)
+        redMidUpButton.move(560, 410)
+        redMidUpButton.setIcon(QIcon('Lane pngs/up.png'))
+        redMidUpButton.setIconSize(QtCore.QSize(60,60))
+        redMidUpButton.setStyleSheet("background-color: white")
+
+        redMidDownButton = QPushButton(self)
+        redMidDownButton.resize(60,60)
+        redMidDownButton.move(630, 410)
+        redMidDownButton.setIcon(QIcon('Lane pngs/down.png'))
+        redMidDownButton.setIconSize(QtCore.QSize(60,60))
+        redMidDownButton.setStyleSheet("background-color: white")
+
+        redBottomUpButton = QPushButton(self)
+        redBottomUpButton.resize(60,60)
+        redBottomUpButton.move(560, 550)
+        redBottomUpButton.setIcon(QIcon('Lane pngs/up.png'))
+        redBottomUpButton.setIconSize(QtCore.QSize(60,60))
+        redBottomUpButton.setStyleSheet("background-color: white")
+
+        redBottomDownButton = QPushButton(self)
+        redBottomDownButton.resize(60,60)
+        redBottomDownButton.move(630, 550)
+        redBottomDownButton.setIcon(QIcon('Lane pngs/down.png'))
+        redBottomDownButton.setIconSize(QtCore.QSize(60,60))
+        redBottomDownButton.setStyleSheet("background-color: white")
+
+        redSuportButton = QPushButton(self)
+        redSuportButton.resize(60,60)
+        redSuportButton.move(595, 690)
+        redSuportButton.setIcon(QIcon('Lane pngs/up.png'))
+        redSuportButton.setIconSize(QtCore.QSize(60,60))
+        redSuportButton.setStyleSheet("background-color: white")
+
+    def paintEvent(self, event):
+
+        painter = QPainter(self)
+        painter.setPen(QPen(QColor(0, 0, 0), 3))
+        painter.drawLine(510,120,510,750)
 
     def clickMethod(self):
         print('Entered Game ID: ' + self.gameId.text())
