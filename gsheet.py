@@ -1,12 +1,21 @@
+from oauth2client.service_account import ServiceAccountCredentials
 from riotwatcher import LolWatcher, ApiError
 from typing import List, Optional
 from pydantic import BaseModel
-import sys
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QApplication
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QPixmap, QIcon, QPainter, QColor, QPen
 import urllib
+import gspread
+import time
+import sys
+
+scope = ['https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("lolgsheet.json",scope)
+client = gspread.authorize(creds)
+
+top = client.open("LoLGSheet").worksheet("Top")
 
 class Timeline(BaseModel):
     lane: str
@@ -63,7 +72,6 @@ class Team(BaseModel):
     dragonKills: int
     riftHeraldKills: int
 
-
 class Match(BaseModel):
     gameId: int
     gameCreation: int
@@ -99,6 +107,12 @@ class MainWindow(QMainWindow):
         enterButton.resize(200,32)
         enterButton.move(300, 60)
         enterButton.setStyleSheet("background-color: white")
+
+        sendInfoButton = QPushButton('To GSheet',self)
+        sendInfoButton.clicked.connect(self.sendMethod)
+        sendInfoButton.resize(200,32)
+        sendInfoButton.move(700, 40)
+        sendInfoButton.setStyleSheet("background-color: white")
 
         self.blueTop = QLabel(self)
         self.pixmap = QPixmap("Lane pngs/top.png")
@@ -319,14 +333,39 @@ class MainWindow(QMainWindow):
         # label.move(100,100)
         # label.resize(120,120)
         # label.show()
+    
+    def sendMethod(self):
+        playerSelected = 59
+
+        currGame = get_game_data_id(LOLWATCHER,REGION,self.gameId.text())
+        time.sleep(1)
+        CHAMP_IDS, CHAMPS_IN_GAME = get_teams_data(self.gameId.text())
+        print(CHAMP_IDS)
+        print()
+        print(CHAMPS_IN_GAME)
+        
+        emptyCell = 6
+        while top.cell(emptyCell,1).value != None:
+            emptyCell = emptyCell + 1
+        print(emptyCell)
 
 
-LOLWATCHER = LolWatcher('RGAPI-4cdd9576-a891-4c2d-87f0-5c218ae9da17')
+        playerData = None
+        for summoner in currGame.participants:
+            if summoner.championId == playerSelected:
+                playerData = summoner
+        print(playerData)
+
+        dataToWrite = [self.gameId.text(),currGame.gameCreation,playerData.teamId,CHAMP_IDS[str(playerSelected)],currGame.gameDuration]
+        
+
+
+LOLWATCHER = LolWatcher('RGAPI-2deeea8c-b0b8-4383-add1-7adb2ae80e1f')
 REGION = 'na1'
 VERISION = LOLWATCHER.data_dragon.versions_for_region(REGION)
 CHAMPION_VERSIONS = VERISION['n']['champion']
 CURR_CHAMP_LIST = LOLWATCHER.data_dragon.champions(CHAMPION_VERSIONS)
-game_id = 4008089613
+game_id = 4030696925
 
 def get_game_data_id(lol_watcher, region, game_id):
     try:
@@ -353,6 +392,9 @@ def get_teams_data(game_id):
             counted+=1
         if counted == 10:
             break
+
+    
+
     return champ_to_id, champs_in_game
 
 if __name__ == "__main__":
