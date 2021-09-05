@@ -335,6 +335,7 @@ class MainWindow(QMainWindow):
         # label.show()
     
     def sendMethod(self):
+        teamSelected = 100
         playerSelected = 59
 
         currGame = get_game_data_id(LOLWATCHER,REGION,self.gameId.text())
@@ -344,19 +345,56 @@ class MainWindow(QMainWindow):
         print()
         print(CHAMPS_IN_GAME)
         
-        emptyCell = 6
-        while top.cell(emptyCell,1).value != None:
-            emptyCell = emptyCell + 1
-        print(emptyCell)
+        row = 6
+        while top.cell(row,1).value != None:
+            row = row + 1
+        print(row)
 
 
         playerData = None
+        totalKills = 0
         for summoner in currGame.participants:
             if summoner.championId == playerSelected:
                 playerData = summoner
+            if summoner.teamId == teamSelected:
+                totalKills += summoner.stats.kills
         print(playerData)
 
-        dataToWrite = [self.gameId.text(),currGame.gameCreation,playerData.teamId,CHAMP_IDS[str(playerSelected)],currGame.gameDuration]
+        blue = 0
+        if teamSelected == 200:
+            blue = 1
+        
+        basicStats = [self.gameId.text(),currGame.gameCreation,playerData.teamId,CHAMP_IDS[str(playerSelected)],currGame.gameDuration/60,
+        currGame.teams[blue].win]
+        print(basicStats)
+
+        kda = (playerData.stats.kills + playerData.stats.assists) / playerData.stats.deaths
+        kp =  (playerData.stats.kills + playerData.stats.assists) / totalKills
+        killStats = [playerData.stats.kills, playerData.stats.deaths, playerData.stats.assists, kda, kp, 
+        playerData.stats.firstBloodKill , playerData.stats.firstBloodAssist]
+        print(killStats)
+
+        damageStats = [playerData.stats.totalDamageDealtToChampions,playerData.stats.damageDealtToTurrets, playerData.stats.damageDealtToObjectives]
+        print(damageStats)
+        tankingStats = [playerData.stats.totalDamageTaken, playerData.stats.damageSelfMitigated, playerData.stats.totalHeal, 
+        playerData.stats.totalUnitsHealed]
+        print(tankingStats)
+        ccStats = [playerData.stats.timeCCingOthers, playerData.stats.totalTimeCrowdControlDealt]
+        print(ccStats)
+        visionScore = [playerData.stats.wardsPlaced, playerData.stats.visionScore, playerData.stats.visionWardsBoughtInGame,
+        playerData.stats.wardsKilled]
+        print(visionScore)
+        totalStats = [basicStats,killStats,damageStats,tankingStats,ccStats,visionScore]
+        print(totalStats)
+
+        column = 1
+        for section in totalStats:
+            print(section)
+            for stat in section:
+                print(stat)
+                top.update_cell(row,column,str(stat))
+                column += 1
+
         
 
 
