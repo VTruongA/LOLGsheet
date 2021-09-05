@@ -15,7 +15,12 @@ scope = ['https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.
 creds = ServiceAccountCredentials.from_json_keyfile_name("lolgsheet.json",scope)
 client = gspread.authorize(creds)
 
-top = client.open("LoLGSheet").worksheet("Top")
+topSheet = client.open("LoLGSheet").worksheet("Top")
+jungleSheet = client.open("LoLGSheet").worksheet("Jungle")
+midSheet = client.open("LoLGSheet").worksheet("Mid")
+adcSheet = client.open("LoLGSheet").worksheet("Marksman")
+supportSheet = client.open("LoLGSheet").worksheet("Support")
+sheets = [topSheet,jungleSheet,midSheet,adcSheet,supportSheet]
 
 class Timeline(BaseModel):
     lane: str
@@ -323,82 +328,61 @@ class MainWindow(QMainWindow):
                 label.show()
                 yPos+=100
                 i+=1
-
-        # url = "http://ddragon.leagueoflegends.com/cdn/" + CHAMPION_VERSIONS + "/img/champion/" + str(CHAMP_IDS["131"]) + ".png"
-        # data = urllib.request.urlopen(url).read()
-        # self.pixMap = QPixmap()
-        # self.pixMap.loadFromData(data)
-        # label = QtWidgets.QLabel(self)
-        # label.setPixmap(self.pixMap)
-        # label.move(100,100)
-        # label.resize(120,120)
-        # label.show()
     
     def sendMethod(self):
-        teamSelected = 100
-        playerSelected = 59
+        teamSelected = 200
 
         currGame = get_game_data_id(LOLWATCHER,REGION,self.gameId.text())
         time.sleep(1)
         CHAMP_IDS, CHAMPS_IN_GAME = get_teams_data(self.gameId.text())
-        print(CHAMP_IDS)
-        print()
-        print(CHAMPS_IN_GAME)
         
-        row = 6
-        while top.cell(row,1).value != None:
-            row = row + 1
-        print(row)
-
-
-        playerData = None
         totalKills = 0
         for summoner in currGame.participants:
-            if summoner.championId == playerSelected:
-                playerData = summoner
             if summoner.teamId == teamSelected:
                 totalKills += summoner.stats.kills
-        print(playerData)
 
         blue = 0
         if teamSelected == 200:
             blue = 1
+
+        whichSheet = 0
+        for player in currGame.participants:
+            if player.teamId == teamSelected:  
+                playerData = player
+                row = 6
+                while sheets[whichSheet].cell(row,1).value != None:
+                    row = row + 1
+                    time.sleep(1)
+
+                basicStats = [self.gameId.text(),currGame.gameCreation,playerData.teamId,CHAMP_IDS[str(playerData.championId)],currGame.gameDuration/60,
+                currGame.teams[blue].win]
+                kda = (playerData.stats.kills + playerData.stats.assists) / playerData.stats.deaths
+                kp =  (playerData.stats.kills + playerData.stats.assists) / totalKills
+                killStats = [playerData.stats.kills, playerData.stats.deaths, playerData.stats.assists, kda, kp, 
+                playerData.stats.firstBloodKill , playerData.stats.firstBloodAssist]
+                damageStats = [playerData.stats.totalDamageDealtToChampions,playerData.stats.damageDealtToTurrets, playerData.stats.damageDealtToObjectives]
+                tankingStats = [playerData.stats.totalDamageTaken, playerData.stats.damageSelfMitigated, playerData.stats.totalHeal, 
+                playerData.stats.totalUnitsHealed]
+                ccStats = [playerData.stats.timeCCingOthers, playerData.stats.totalTimeCrowdControlDealt]
+                visionScore = [playerData.stats.wardsPlaced, playerData.stats.visionScore, playerData.stats.visionWardsBoughtInGame,
+                playerData.stats.wardsKilled]
+                farmStats = [playerData.stats.totalMinionsKilled,playerData.stats.neutralMinionsKilled,playerData.stats.neutralMinionsKilledTeamJungle,playerData.stats.neutralMinionsKilledEnemyJungle]
+                objectiveStats = [playerData.stats.turretKills,playerData.stats.inhibitorKills,playerData.stats.firstTowerKill,playerData.stats.firstTowerAssist]
+                miscStats = [playerData.stats.goldEarned,playerData.stats.champLevel,(playerData.stats.goldEarned)/(currGame.gameDuration/60)]
+                totalStats = [basicStats,killStats,damageStats,tankingStats,ccStats,visionScore,farmStats,objectiveStats,miscStats]
+                
+                column = 1
+                for section in totalStats:
+                    for stat in section:
+                        sheets[whichSheet].update_cell(row,column,str(stat))
+                        column += 1
+                        time.sleep(1)
+                whichSheet+=1
+
         
-        basicStats = [self.gameId.text(),currGame.gameCreation,playerData.teamId,CHAMP_IDS[str(playerSelected)],currGame.gameDuration/60,
-        currGame.teams[blue].win]
-        print(basicStats)
-
-        kda = (playerData.stats.kills + playerData.stats.assists) / playerData.stats.deaths
-        kp =  (playerData.stats.kills + playerData.stats.assists) / totalKills
-        killStats = [playerData.stats.kills, playerData.stats.deaths, playerData.stats.assists, kda, kp, 
-        playerData.stats.firstBloodKill , playerData.stats.firstBloodAssist]
-        print(killStats)
-
-        damageStats = [playerData.stats.totalDamageDealtToChampions,playerData.stats.damageDealtToTurrets, playerData.stats.damageDealtToObjectives]
-        print(damageStats)
-        tankingStats = [playerData.stats.totalDamageTaken, playerData.stats.damageSelfMitigated, playerData.stats.totalHeal, 
-        playerData.stats.totalUnitsHealed]
-        print(tankingStats)
-        ccStats = [playerData.stats.timeCCingOthers, playerData.stats.totalTimeCrowdControlDealt]
-        print(ccStats)
-        visionScore = [playerData.stats.wardsPlaced, playerData.stats.visionScore, playerData.stats.visionWardsBoughtInGame,
-        playerData.stats.wardsKilled]
-        print(visionScore)
-        totalStats = [basicStats,killStats,damageStats,tankingStats,ccStats,visionScore]
-        print(totalStats)
-
-        column = 1
-        for section in totalStats:
-            print(section)
-            for stat in section:
-                print(stat)
-                top.update_cell(row,column,str(stat))
-                column += 1
-
-        
 
 
-LOLWATCHER = LolWatcher('RGAPI-2deeea8c-b0b8-4383-add1-7adb2ae80e1f')
+LOLWATCHER = LolWatcher('RGAPI-fa959162-2db2-40a2-883f-ff286ed48e18')
 REGION = 'na1'
 VERISION = LOLWATCHER.data_dragon.versions_for_region(REGION)
 CHAMPION_VERSIONS = VERISION['n']['champion']
@@ -430,8 +414,6 @@ def get_teams_data(game_id):
             counted+=1
         if counted == 10:
             break
-
-    
 
     return champ_to_id, champs_in_game
 
